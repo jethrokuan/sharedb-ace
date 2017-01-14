@@ -1,0 +1,17 @@
+{
+  "name": "sharedb-ace",
+  "version": "0.0.3",
+  "description": "ShareDB keybindings for Ace Editor",
+  "main": "./distribution/sharedb-ace.js",
+  "repository": "https://github.com/jethrokuan/sharedb-ace",
+  "author": "Jethro Kuan",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel source --presets babel-preset-latest --out-dir distribution",
+    "prepublish": "yarn run build"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-latest": "^6.16.0"
+  }
+}
