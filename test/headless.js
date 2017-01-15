@@ -1,4 +1,6 @@
 require('amd-loader');
+var chai = require('chai');
+var expect = chai.expect;
 var ShareDB = require('sharedb');
 var sharedbAce = require('../distribution/sharedb-ace').default;
 var assert = require('assert');
@@ -7,14 +9,14 @@ var assert = require('assert');
 var backend = new ShareDB();
 var connection = backend.connect();
 
-function newDoc(text, cb) {
-  var doc = connection.get('foo', 'bar'); 
+function newDoc(collection, id, text, cb) {
+  var doc = connection.get(collection, id); 
 
   doc.fetch(function(err) {
     if (err) throw err;
     if (doc.type === null) {
       doc.create(text);
-      cb(doc); 
+      cb(doc);
     }
   });
 }
@@ -25,6 +27,7 @@ var MockRenderer = require("../ace/lib/ace/test/mockrenderer").MockRenderer;
 var Editor = require("../ace/lib/ace/editor").Editor;
 var EditSession = require("../ace/lib/ace/edit_session").EditSession;
 
+// Helper Functions
 function newSAEditor(doc) {
   var editor = new Editor(new MockRenderer()); 
   editor.$blockScrolling = Infinity; 
@@ -36,11 +39,12 @@ function newSAEditor(doc) {
 }
 
 describe('Editor creation', function() {
-  it('sets starting text', function() {
-    var sa; 
-    newDoc('hello', function() {
-      sa = newSAEditor(doc); 
-      assert.equal('hello', sa.session.getValue());
+  it('sets starting text', function(done) {
+    newDoc('foo', 'bar', 'hello', function(doc) {
+      var sa = newSAEditor(doc);
+      sa.setup(); 
+      expect(sa.session.getValue()).to.equal('hello');
+      done();
     }); 
   });
 });

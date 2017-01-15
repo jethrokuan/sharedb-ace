@@ -14,7 +14,7 @@ class sharedbAce {
 
   setup() {
     this.session.setValue(this.doc.data);
-    doc.on('op', function(op, source) {
+    this.doc.on('op', function(op, source) {
       console.log(op);
     });    
   }
