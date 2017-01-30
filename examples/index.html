@@ -1,3 +1,41 @@
-<html>
-  <script src="../distribution/sharedb-ace.js"></script>
+<html charset="UTF-8">
+  <head>
+    <style type="text/css" media="screen">
+     body {
+         overflow: hidden;
+     }
+     #editor {
+         margin: 0;
+         position: absolute;
+         top: 0;
+         bottom: 0;
+         left: 0;
+         right: 50%;
+     }
+    </style>
+  </head>
+  <pre id="editor">function foo(items) {
+    var i;
+    for (i = 0; i &lt; items.length; i++) {
+        alert("Ace Rocks " + items[i]);
+    }
+}</pre>
+  <script src="./lib/require.js"></script>
+  <script type="text/javascript">
+   require.config({
+     paths: {
+       ace: "../ace/build/src",
+       lib: "../distribution"
+     }
+   });
+
+   require(['ace/ace', 'lib/sharedb-ace'], function(ace, sharedbAce) {
+     // TODO: fix worker path issue
+     /* ace.config.set("workerPath", "../ace/build/src");*/
+     var editor = ace.edit("editor") ;
+     editor.setTheme("ace/theme/twilight");
+     editor.getSession().setMode("ace/mode/javascript");
+     /* var shareAce = new sharedbAce(editor.getSession(), undefined);   */
+   }); 
+  </script>
 </html>
