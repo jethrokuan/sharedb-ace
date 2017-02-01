@@ -51,26 +51,27 @@
    require.config({
      paths: {
        ace: "../ace/build/src",
-       lib: "../distribution"
+       lib: "../distribution", 
      }
    });
 
    require(['ace/ace', 'lib/sharedb-ace'], function(ace, sharedbAce) {
      // TODO: fix worker path issue
      /* ace.config.set("workerPath", "../ace/build/src");*/
-     var editor = ace.edit("editor") ;
+     var editor = ace.edit("editor") ; 
      editor.setTheme("ace/theme/twilight");
      var session = editor.getSession();
      var aceDiv = document.getElementById("ace_debug");
      session.setMode("ace/mode/javascript");
+     session.setNewLineMode("unix"); 
      session.on("change", function(delta) {
-       console.log(delta);
        var node = document.createElement("LI");
        var textnode = document.createTextNode(JSON.stringify(delta));
        node.appendChild(textnode);
        aceDiv.appendChild(node);
-     })
-     /* var shareAce = new sharedbAce(editor.getSession(), undefined);   */
+     });
+
+     var shareAce = new sharedbAce.default(editor, {});
    }); 
   </script>
 </html>
