@@ -32,6 +32,10 @@ align-text@^0.1.1, align-text@^0.1.3:
     longest "^1.0.1"
     repeat-string "^1.5.2"
 
+all@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/all/-/all-0.0.0.tgz#fb2aa75d4759d40e39ecbb118fabf0cc11ff554f"
+
 amd-loader@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/amd-loader/-/amd-loader-0.0.5.tgz#9b4c1c26b70015e4ddaec7d6dcd21265090819a0"
