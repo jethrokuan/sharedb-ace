@@ -28,14 +28,14 @@ class sharedbAce {
     // });
   }
 
-
-  /*
-   * Local -> Remote changes
+  /**
+   * @param delta - delta that ace editor produces upon changes
+   * eg. {"start":{"row":5,"column":1},"end":{"row":5,"column":2},"action":"insert","lines":["d"]}
    */
-
   deltaTransform(delta) {
     // TODO: add path
     // TODO: refactor
+    // FIXME: Doesn't support pasting of multiple lines
     var aceDoc = this.session.getDocument();
     var obj = {};
     obj.p = aceDoc.positionToIndex(delta.start);
@@ -57,17 +57,17 @@ class sharedbAce {
     return obj;
   }
   /*
-   [{"p":[4],"sd":"e"}]
-   [{"p":[4],"si":"d"}]
-   * Local -> Remote changes
-   * Remote -> locate
-   Insert character:
-   {"start":{"row":5,"column":1},"end":{"row":5,"column":2},"action":"insert","lines":["d"]}
-   Insert new line:
-   {"start":{"row":7,"column":0},"end":{"row":8,"column":0},"action":"insert","lines":["",""]}
-   Delete line:
+    [{"p":[4],"sd":"e"}]
+    [{"p":[4],"si":"d"}]
+    * Local -> Remote changes
+    * Remote -> locate
+    Insert character:
+    {"start":{"row":5,"column":1},"end":{"row":5,"column":2},"action":"insert","lines":["d"]}
+    Insert new line:
+    {"start":{"row":7,"column":0},"end":{"row":8,"column":0},"action":"insert","lines":["",""]}
+    Delete line:
 
-   */
+  */
   /*
    * Remote -> Local changes
    */
