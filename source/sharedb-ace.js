@@ -18,10 +18,11 @@ class sharedbAce {
     var self = this;
     this.session.on("change", function(delta) {
       var op = self.deltaTransform(delta);
+      console.log(op);
       // false because op needs to be sent to the server
-      self.doc.submitOp(op, false, function(err) {
-        if (err) throw err;
-      });
+      // self.doc.submitOp(op, false, function(err) {
+      //   if (err) throw err;
+      // });
     });
     // this.doc.on('op', function(op, source) {
     //   console.log(op);
@@ -33,27 +34,21 @@ class sharedbAce {
    * eg. {"start":{"row":5,"column":1},"end":{"row":5,"column":2},"action":"insert","lines":["d"]}
    */
   deltaTransform(delta) {
-    // TODO: add path
-    // TODO: refactor
-    // FIXME: Doesn't support pasting of multiple lines
+    // TODO: add path 
     var aceDoc = this.session.getDocument();
     var obj = {};
     obj.p = aceDoc.positionToIndex(delta.start);
+    var action;
     if (delta.action === "insert") {
-      if (delta.lines.length === 2) {
-        obj.si = "\n";
-      } else {
-        obj.si = delta.lines[0];
-      } 
+      action = "si";
     } else if (delta.action === "remove") {
-      if (delta.lines.length === 2) {
-        obj.sr = "\n";
-      } else {
-        obj.sr = delta.lines[0];
-      } 
+      action = "sr";
     } else {
       throw new Exception("action not supported");
     }
+    
+    var str = delta.lines.join("\n");
+    obj[action] = str;
     return obj;
   }
   /*
