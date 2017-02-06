@@ -30,12 +30,7 @@
      
     </style>
   </head> 
-  <pre id="editor">function foo(items) {
-    var i;
-    for (i = 0; i &lt; items.length; i++) {
-        alert("Ace Rocks " + items[i]);
-    }
-}</pre> 
+  <pre id="editor"></pre> 
   <div class="right">
     <div id="aceDiv">
       <h1>Ace Editor</h1>
@@ -63,15 +58,16 @@
      var session = editor.getSession();
      var aceDiv = document.getElementById("ace_debug");
      session.setMode("ace/mode/javascript");
-     session.setNewLineMode("unix"); 
-     session.on("change", function(delta) {
-       var node = document.createElement("LI");
-       var textnode = document.createTextNode(JSON.stringify(delta));
-       node.appendChild(textnode);
-       aceDiv.appendChild(node);
-     });
+     session.setNewLineMode("unix");
+     /* session.on("change", function(delta) {
+      *   var node = document.createElement("LI");
+      *   var textnode = document.createTextNode(JSON.stringify(delta));
+      *   node.appendChild(textnode);
+      *   aceDiv.appendChild(node);
+      * });*/
 
-     var shareAce = new sharedbAce.default(editor, {});
+     var shareAce = new sharedbAce.default("ws://localhost:3000/", "codepad", "5898777197b4b41abeb7cfda");
+     shareAce.add(editor, ["code"]);
    }); 
   </script>
 </html>
