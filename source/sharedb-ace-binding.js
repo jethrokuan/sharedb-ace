@@ -1,9 +1,7 @@
 class sharedbAceBinding {
   constructor(aceInstance, path, doc) {
     this.editor = aceInstance; 
-    this.session = aceInstance.getSession();
-    const newline = this.session.getDocument().getNewLineCharacter();
-    this.newlineLength = newline.length;
+    this.session = aceInstance.getSession(); 
     this.path = path;
     this.doc = doc;
     this.suppress = false; 
@@ -70,8 +68,9 @@ class sharedbAceBinding {
     }
 
     let count = 0;
+    const newline = self.session.getDocument().getNewLineCharacter();
     for (let line in lines) {
-      count += lines[line].length + self.newlineLength;
+      count += lines[line].length + newline.length;
     } 
     const start = pos;
     const end = self.session.doc.indexToPosition(index + count, 0);
@@ -90,16 +89,14 @@ class sharedbAceBinding {
     console.log(delta);
     const self = this; 
 
-    // Rerender
-    var wrap = self.editor.session.$useWrapMode;
-    var lastRow = (delta.start.row == delta.end.row ? delta.end.row : Infinity);
-    self.editor.renderer.updateLines(delta.start.row, lastRow, wrap);
+    // Rerender the whole document
+    self.repaint();
 
     // self.editor._signal("change", delta);
     
     // Update cursor because tab characters can influence the cursor position.
-    // self.editor.$cursorChange();
-    // self.editor.$updateHighlightActiveLine(); 
+    self.editor.$cursorChange();
+    self.editor.$updateHighlightActiveLine(); 
 
     if (self.suppress) return;
     
@@ -108,6 +105,14 @@ class sharedbAceBinding {
     self.doc.submitOp(op, {source: self}, function(err) {
       if (err) throw err; 
     });
+  }
+
+  // Repaint the whole document
+  // TODO: optimize, only repaint from start row onwards
+  repaint() {
+    var wrap = this.editor.session.$useWrapMode;
+    var lastRow = this.session.getDocument().getLength() -1; 
+    this.editor.renderer.updateLines(0, lastRow, wrap);
   }
 
   onRemoteChange(ops, source) {
@@ -119,10 +124,11 @@ class sharedbAceBinding {
     for (const op of ops) {
       deltas.push(self.opTransform(op));
     }
-    console.log(deltas);
+    
     self.suppress = true;
-    self.session.getDocument().applyDeltas(deltas);
+    self.session.getDocument().applyDeltas(deltas); 
     self.suppress = false;
+    self.repaint();
   }
 }
 
