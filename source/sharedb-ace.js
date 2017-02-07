@@ -28,7 +28,6 @@ class sharedbAce extends EventEmitter {
       self.emit('ready');
     }); 
     self.doc = doc;
-    
     self.connections = {};
   }
   

@@ -1,9 +1,10 @@
 class sharedbAceBinding {
-  constructor(session, path, doc) {
-    this.session = session;
+  constructor(aceInstance, path, doc) {
+    this.editor = aceInstance;
+    this.session = aceInstance.getSession();
     this.path = path;
     this.doc = doc;
-    this.suppress = false;
+    this.suppress = false; 
     this.setup(); 
   }
 
@@ -14,6 +15,10 @@ class sharedbAceBinding {
     self.session.setValue(self.doc.data[self.path[0]]);
     self.suppress = false;
 
+    self.session.removeAllListeners('change');
+    self.doc.removeAllListeners('op');
+    // self.session.on('change', self.onLocalChange.call(self));
+      
     self.session.on('change', self.onLocalChange.bind(self));
     
     self.doc.on('op', self.onRemoteChange.bind(self)); 
@@ -50,24 +55,31 @@ class sharedbAceBinding {
     const self = this;
     const index = op.p[op.p.length -1]; 
     const pos = self.session.doc.indexToPosition(pos, 0); 
-    let action;
-    let lines;
+    let action, lines, start, end; 
     if('sd' in op) {
       action = 'remove';
       lines = op.sd.split('\n');
+      start = pos;
+      end = {
+        row: pos.row + lines.length,
+        column: lines[lines.length -1].length,
+      };
     } else if ('si' in op) {
       action = 'insert';
       lines = op.si.split('\n');
+      start = {
+        // FIXME: wrong row and column for start
+        row: pos.row - lines.length,
+        column: pos.column - lines[lines.length -1].length,
+      };
+      end = pos;
     } else {
       throw Exception('Invalid Operation: ' + JSON.stringify(op));
     }
     
     const delta = {
-      'start': pos,
-      'end':{
-        'row': pos.row + lines.length,
-        'column': lines[lines.length - 1].length
-      },
+      'start': start,
+      'end': end,
       'action': action,
       'lines': lines
     };
@@ -75,9 +87,23 @@ class sharedbAceBinding {
   }
 
   onLocalChange(delta) {
-    const self = this;
-    console.log(self);
-    if (self.suppress) return; 
+    console.log("local change event fired");
+    console.log(delta);
+    const self = this; 
+
+    // Rerender
+    var wrap = self.editor.session.$useWrapMode;
+    var lastRow = (delta.start.row == delta.end.row ? delta.end.row : Infinity);
+    self.editor.renderer.updateLines(delta.start.row, lastRow, wrap);
+
+    // self.editor._signal("change", delta);
+    
+    // Update cursor because tab characters can influence the cursor position.
+    // self.editor.$cursorChange();
+    // self.editor.$updateHighlightActiveLine(); 
+
+    if (self.suppress) return;
+    
     const op = self.deltaTransform(delta);
 
     self.doc.submitOp(op, {source: self}, function(err) {
@@ -86,13 +112,15 @@ class sharedbAceBinding {
   }
 
   onRemoteChange(ops, source) {
+    console.log("remove event fired");
     const self = this;
     if (source === self) return;
     const deltas = [];
+    
     for (const op of ops) {
-      console.log(op);
       deltas.push(self.opTransform(op));
     }
+    console.log(deltas);
     self.suppress = true;
     self.session.getDocument().applyDeltas(deltas);
     self.suppress = false;
