@@ -1,7 +1,8 @@
 var sharedb = require("../node_modules/sharedb/lib/client");
 import sharedbAceBinding from "./sharedb-ace-binding";
+import EventEmitter from "event-emitter-es6";
 
-class sharedbAce {
+class sharedbAce extends EventEmitter {
 
   /**
    * @param wsUrl - URL to connect to shareDB
@@ -13,6 +14,8 @@ class sharedbAce {
    * and initializes the sharedb with no connections
    */
   constructor(wsUrl, namespace, id) {
+    super();
+    const self = this;
     const socket = new WebSocket(wsUrl);
     const connection = new sharedb.Connection(socket);
     const doc = connection.get(namespace, id);
@@ -22,11 +25,11 @@ class sharedbAce {
       if (doc.type === null) {
         throw 'Document Uninitialized';
       }
-      console.log(doc);
+      self.emit('ready');
     }); 
-    this.doc = doc;
+    self.doc = doc;
     
-    this.connections = {};
+    self.connections = {};
   }
   
   /**

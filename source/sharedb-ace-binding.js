@@ -1,28 +1,35 @@
 class sharedbAceBinding {
-  constructor(aceInstance, path, doc) {    
-    this.session = aceInstance.getSession();
+  constructor(aceInstance, path, doc) {
+    this.editor = aceInstance;
+    this.session = aceInstance.getSession(); 
     this.path = path;
     this.doc = doc; 
-    this.setup();
+    this.setup(); 
   }
 
   setup() {
     const self = this;
-    
-    // self.session.setValue(self.doc.data[self.path[0]]); 
-    
+    // Set initial data 
+    self.session.setValue(self.doc.data[self.path[0]]); 
+    // self.session.removeAllListeners('change');
     self.session.on('change', function(delta) {
-      const op = self.deltaTransform(delta);
-      console.log(op);
+      const op = self.deltaTransform(delta); 
       // set source to self
-      self.doc.submitOp([op], {source: self}, function(err) {
+      self.doc.submitOp(op, {source: self}, function(err) {
         if (err) throw err;
+        console.log(err);
       });
     });
-    self.doc.on('op', function(op, source) {
+    self.doc.on('op', function(ops, source) {
       if (source === self) return;
-      const delta = self.opTransform(op);
-      self.session.getDocument().applyDeltas([delta]);
+      console.log("received op"); 
+      const deltas = [];
+      for (const op of ops) {
+        console.log(op);
+        deltas.push(self.opTransform(op));
+      }
+      console.log(deltas);
+      self.session.getDocument().applyDeltas(deltas);
     }); 
   }
   
@@ -65,21 +72,25 @@ class sharedbAceBinding {
    */
 
   opTransform(op) {
-    const pos = op.path[op.path.length -1];
-    const index = aceInstance.session.doc.positionToIndex(pos, 0);
+    const self = this;
+    const index = op.p[op.p.length -1]; 
+    const pos = self.session.doc.indexToPosition(pos, 0); 
     let action;
+    let lines;
     if('sd' in op) {
       action = 'remove';
+      lines = op.sd.split('\n');
     } else if ('si' in op) {
       action = 'insert';
+      lines = op.si.split('\n');
     } else {
       throw Exception('Invalid Operation: ' + JSON.stringify(op));
     }
-    const lines = op[action].split('\n');
+    
     const delta = {
-      'start': index,
+      'start': pos,
       'end':{
-        'row': index.row + lines.length,
+        'row': pos.row + lines.length,
         'column': lines[lines.length - 1].length
       },
       'action': action,

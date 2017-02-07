@@ -32,10 +32,6 @@ align-text@^0.1.1, align-text@^0.1.3:
     longest "^1.0.1"
     repeat-string "^1.5.2"
 
-all@^0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/all/-/all-0.0.0.tgz#fb2aa75d4759d40e39ecbb118fabf0cc11ff554f"
-
 amd-loader@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/amd-loader/-/amd-loader-0.0.5.tgz#9b4c1c26b70015e4ddaec7d6dcd21265090819a0"
@@ -993,6 +989,10 @@ estraverse@^1.9.1:
 esutils@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.2.tgz#0abf4f1caa5bcb1f7a9d8acc6dea4faaa04bac9b"
+
+event-emitter-es6@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/event-emitter-es6/-/event-emitter-es6-1.1.5.tgz#ef95311b2e17aa39be763b031ce4af7ee9cb7849"
 
 events@^1.0.0:
   version "1.1.1"
