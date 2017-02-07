@@ -1,7 +1,9 @@
 class sharedbAceBinding {
   constructor(aceInstance, path, doc) {
-    this.editor = aceInstance; 
-    this.session = aceInstance.getSession(); 
+    this.editor = aceInstance;
+    this.editor.$blockScrolling = Infinity;
+    this.session = aceInstance.getSession();
+    this.newline = this.session.getDocument().getNewLineCharacter(); 
     this.path = path;
     this.doc = doc;
     this.suppress = false; 
@@ -29,7 +31,6 @@ class sharedbAceBinding {
    * eg. {'start':{'row':5,'column':1},'end':{'row':5,'column':2},'action':'insert','lines':['d']}
    */
   deltaTransform(delta) {
-    // TODO: add path 
     const aceDoc = this.session.getDocument(); 
     const op = {};
     op.p = this.path.concat(aceDoc.positionToIndex(delta.start));
@@ -43,6 +44,7 @@ class sharedbAceBinding {
     }
     
     const str = delta.lines.join('\n');
+    console.log(JSON.stringify(str));
     op[action] = str;
     return op;
   }
@@ -59,19 +61,20 @@ class sharedbAceBinding {
     
     if('sd' in op) {
       action = 'remove';
-      lines = op.sd.split('\n'); 
+      lines = op.sd.split('\n');
     } else if ('si' in op) {
       action = 'insert';
-      lines = op.si.split('\n'); 
+      lines = op.si.split('\n');
     } else {
       throw Exception('Invalid Operation: ' + JSON.stringify(op));
     }
 
     let count = 0;
-    const newline = self.session.getDocument().getNewLineCharacter();
     for (let line in lines) {
-      count += lines[line].length + newline.length;
-    } 
+      count += lines[line].length;
+    }
+    count += lines.length - 1;
+    
     const start = pos;
     const end = self.session.doc.indexToPosition(index + count, 0);
     
@@ -111,7 +114,8 @@ class sharedbAceBinding {
   // TODO: optimize, only repaint from start row onwards
   repaint() {
     var wrap = this.editor.session.$useWrapMode;
-    var lastRow = this.session.getDocument().getLength() -1; 
+    var lastRow = this.session.getDocument().getLength() -1;
+    console.log(`Repainting: lines 0 to ${lastRow}`);
     this.editor.renderer.updateLines(0, lastRow, wrap);
   }
 
