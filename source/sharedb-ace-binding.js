@@ -1,7 +1,9 @@
 class sharedbAceBinding {
   constructor(aceInstance, path, doc) {
-    this.editor = aceInstance;
+    this.editor = aceInstance; 
     this.session = aceInstance.getSession();
+    const newline = this.session.getDocument().getNewLineCharacter();
+    this.newlineLength = newline.length;
     this.path = path;
     this.doc = doc;
     this.suppress = false; 
@@ -54,28 +56,25 @@ class sharedbAceBinding {
   opTransform(op) {
     const self = this;
     const index = op.p[op.p.length -1]; 
-    const pos = self.session.doc.indexToPosition(pos, 0); 
-    let action, lines, start, end; 
+    const pos = self.session.doc.indexToPosition(index, 0); 
+    let action, lines;
+    
     if('sd' in op) {
       action = 'remove';
-      lines = op.sd.split('\n');
-      start = pos;
-      end = {
-        row: pos.row + lines.length,
-        column: lines[lines.length -1].length,
-      };
+      lines = op.sd.split('\n'); 
     } else if ('si' in op) {
       action = 'insert';
-      lines = op.si.split('\n');
-      start = {
-        // FIXME: wrong row and column for start
-        row: pos.row - lines.length,
-        column: pos.column - lines[lines.length -1].length,
-      };
-      end = pos;
+      lines = op.si.split('\n'); 
     } else {
       throw Exception('Invalid Operation: ' + JSON.stringify(op));
     }
+
+    let count = 0;
+    for (let line in lines) {
+      count += lines[line].length + self.newlineLength;
+    } 
+    const start = pos;
+    const end = self.session.doc.indexToPosition(index + count, 0);
     
     const delta = {
       'start': start,
