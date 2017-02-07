@@ -59,17 +59,16 @@
      /* var aceDiv = document.getElementById("ace_debug");*/
      session.setMode("ace/mode/javascript");
      session.setNewLineMode("unix");
-     session.on("change", function(delta) {
-       console.log('on change fired!!');
-       var node = document.createElement("LI");
-       var textnode = document.createTextNode(JSON.stringify(delta));
-       node.appendChild(textnode);
-       aceDiv.appendChild(node);
-     });
+     /* session.on("change", function(delta) {
+      *   var node = document.createElement("LI");
+      *   var textnode = document.createTextNode(JSON.stringify(delta));
+      *   node.appendChild(textnode);
+      *   aceDiv.appendChild(node);
+      * });*/
 
      var shareAce = new sharedbAce.default("ws://localhost:3000/", "codepad", "5898777197b4b41abeb7cfda");
      shareAce.on('ready', function() {
-       shareAce.add(editor, ["code"]);
+       shareAce.add(session, ["code"]);
      }) 
    }); 
   </script>

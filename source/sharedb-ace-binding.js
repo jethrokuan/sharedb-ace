@@ -1,36 +1,22 @@
 class sharedbAceBinding {
-  constructor(aceInstance, path, doc) {
-    this.editor = aceInstance;
-    this.session = aceInstance.getSession(); 
+  constructor(session, path, doc) {
+    this.session = session;
     this.path = path;
-    this.doc = doc; 
+    this.doc = doc;
+    this.suppress = false;
     this.setup(); 
   }
 
   setup() {
     const self = this;
-    // Set initial data 
-    self.session.setValue(self.doc.data[self.path[0]]); 
-    // self.session.removeAllListeners('change');
-    self.session.on('change', function(delta) {
-      const op = self.deltaTransform(delta); 
-      // set source to self
-      self.doc.submitOp(op, {source: self}, function(err) {
-        if (err) throw err;
-        console.log(err);
-      });
-    });
-    self.doc.on('op', function(ops, source) {
-      if (source === self) return;
-      console.log("received op"); 
-      const deltas = [];
-      for (const op of ops) {
-        console.log(op);
-        deltas.push(self.opTransform(op));
-      }
-      console.log(deltas);
-      self.session.getDocument().applyDeltas(deltas);
-    }); 
+    // Set initial data
+    self.suppress = true;
+    self.session.setValue(self.doc.data[self.path[0]]);
+    self.suppress = false;
+
+    self.session.on('change', self.onLocalChange.bind(self));
+    
+    self.doc.on('op', self.onRemoteChange.bind(self)); 
   }
   
   /**
@@ -55,22 +41,11 @@ class sharedbAceBinding {
     op[action] = str;
     return op;
   }
-  /*
-    [{'p':[4],'sd':'e'}]
-    [{'p':[4],'si':'d'}]
-    * Local -> Remote changes
-    * Remote -> locate
-    Insert character:
-    {'start':{'row':5,'column':1},'end':{'row':5,'column':2},'action':'insert','lines':['d']}
-    Insert new line:
-    {'start':{'row':7,'column':0},'end':{'row':8,'column':0},'action':'insert','lines':['','']}
-    Delete line:
 
-  */
-  /*
-   * Remote -> Local changes
+  /**
+   * @param op - op that sharedb returns
+   * eg. [{'p':[4],'sd':'e'}]
    */
-
   opTransform(op) {
     const self = this;
     const index = op.p[op.p.length -1]; 
@@ -97,6 +72,30 @@ class sharedbAceBinding {
       'lines': lines
     };
     return delta;
+  }
+
+  onLocalChange(delta) {
+    const self = this;
+    console.log(self);
+    if (self.suppress) return; 
+    const op = self.deltaTransform(delta);
+
+    self.doc.submitOp(op, {source: self}, function(err) {
+      if (err) throw err; 
+    });
+  }
+
+  onRemoteChange(ops, source) {
+    const self = this;
+    if (source === self) return;
+    const deltas = [];
+    for (const op of ops) {
+      console.log(op);
+      deltas.push(self.opTransform(op));
+    }
+    self.suppress = true;
+    self.session.getDocument().applyDeltas(deltas);
+    self.suppress = false;
   }
 }
 

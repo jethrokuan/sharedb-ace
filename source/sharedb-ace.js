@@ -38,8 +38,8 @@ class sharedbAce extends EventEmitter {
    * adds a two-way binding between an aceInstance and the path
    * eg. add(aceInstance, ["foo"]);
    */ 
-  add(aceInstance, path) {
-    var binding = new sharedbAceBinding(aceInstance, path, this.doc);
+  add(session, path) {
+    var binding = new sharedbAceBinding(session, path, this.doc);
     this.connections[path.join(',')] = binding; 
     binding.setup();
   }
