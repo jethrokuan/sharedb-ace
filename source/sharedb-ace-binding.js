@@ -1,3 +1,5 @@
+import Logdown from 'logdown';
+
 class SharedbAceBinding {
   constructor(aceInstance, path, doc) {
     this.editor = aceInstance;
@@ -8,6 +10,7 @@ class SharedbAceBinding {
     this.doc = doc;
     this.suppress = false;
     this.setup();
+    this.logger = new Logdown({ prefix: 'shareace' });
   }
 
   setup() {
@@ -46,7 +49,7 @@ class SharedbAceBinding {
     }
 
     const str = delta.lines.join('\n');
-    console.log(JSON.stringify(str));
+    this.logger.log(JSON.stringify(str));
     op[action] = str;
     return op;
   }
@@ -87,7 +90,7 @@ class SharedbAceBinding {
   }
 
   onLocalChange(delta) {
-    console.log('local event fired');
+    this.logger.log('local event fired');
     // Rerender the whole document
     this.repaint();
 
@@ -112,12 +115,12 @@ class SharedbAceBinding {
   repaint() {
     const wrap = this.editor.session.$useWrapMode;
     const lastRow = this.session.getDocument().getLength() - 1;
-    console.log(`Repainting: lines 0 to ${lastRow}`);
+    this.logger.log(`*Repainting*: lines 0 to ${lastRow}`);
     this.editor.renderer.updateLines(0, lastRow, wrap);
   }
 
   onRemoteChange(ops, source) {
-    console.log('remove event fired');
+    this.logger.log('remove event fired');
     const self = this;
 
     if (source === self) return;
@@ -132,3 +135,4 @@ class SharedbAceBinding {
 }
 
 export default SharedbAceBinding;
+
