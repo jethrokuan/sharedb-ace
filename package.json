@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack",
+    "build:watch": "webpack --watch",
     "prepublish": "yarn run build",
     "test": "mocha",
     "lint": "eslint source"

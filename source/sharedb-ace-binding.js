@@ -49,7 +49,7 @@ class SharedbAceBinding {
     }
 
     const str = delta.lines.join('\n');
-    this.logger.log(JSON.stringify(str));
+
     op[action] = str;
     return op;
   }
@@ -90,7 +90,7 @@ class SharedbAceBinding {
   }
 
   onLocalChange(delta) {
-    this.logger.log('local event fired');
+    this.logger.log(`*localevent*: fired ${Date.now()}`);
     // Rerender the whole document
     this.repaint();
 
@@ -102,9 +102,12 @@ class SharedbAceBinding {
 
     if (this.suppress) return;
     const op = this.deltaTransform(delta);
+    this.logger.log(`*localevent*: delta received: ${JSON.stringify(delta)}`);
+    this.logger.log(`*localevent*: transformed op: ${JSON.stringify(op)}`);
 
     const docSubmitted = (err) => {
       if (err) throw err;
+      this.logger.log('*localevent*: op submitted');
     };
 
     this.doc.submitOp(op, { source: this }, docSubmitted);
@@ -115,24 +118,30 @@ class SharedbAceBinding {
   repaint() {
     const wrap = this.editor.session.$useWrapMode;
     const lastRow = this.session.getDocument().getLength() - 1;
-    this.logger.log(`*Repainting*: lines 0 to ${lastRow}`);
+    this.logger.log(`*repaint*: lines 0 to ${lastRow}`);
     this.editor.renderer.updateLines(0, lastRow, wrap);
   }
 
   onRemoteChange(ops, source) {
-    this.logger.log('remove event fired');
+    this.logger.log(`*remoteevent*: fired ${Date.now()}`);
     const self = this;
 
-    if (source === self) return;
+    if (source === self) {
+      this.logger.log('*remoteevent*: op origin is self; _skipping_');
+      return;
+    }
     const deltas = [];
     ops.forEach(op => deltas.push(self.opTransform(op)));
+    this.logger.log(`*remoteevent*: op received: ${JSON.stringify(ops)}`);
+    this.logger.log(`*remoteevent*: transformed delta: ${JSON.stringify(deltas)}`);
 
     self.suppress = true;
     self.session.getDocument().applyDeltas(deltas);
     self.suppress = false;
+    this.logger.log('*remoteevent*: delta applied');
+
     self.repaint();
   }
 }
 
 export default SharedbAceBinding;
-
