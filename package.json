@@ -9,7 +9,13 @@
   "scripts": {
     "build": "webpack",
     "prepublish": "yarn run build",
-    "test": "mocha"
+    "test": "mocha",
+    "lint": "eslint source"
+  },
+  "precommit": {
+    "run": [
+      "lint"
+    ]
   },
   "devDependencies": {
     "amd-loader": "^0.0.5",
@@ -23,12 +29,14 @@
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
-    "eslint-plugin-react": "^6.9.0", 
+    "eslint-plugin-react": "^6.9.0",
     "mocha": "^3.2.0",
+    "pre-commit": "^1.2.2",
     "webpack": "^1.14.0"
   },
   "dependencies": {
     "event-emitter-es6": "^1.1.5",
+    "reconnecting-websocket": "^3.0.3",
     "sharedb": "^1.0.0-beta.7"
   }
 }

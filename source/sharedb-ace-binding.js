@@ -70,11 +70,7 @@ class SharedbAceBinding {
       throw new Error(`Invalid Operation: ${JSON.stringify(op)}`);
     }
 
-    let count = 0;
-    for (const line of lines) {
-      count += lines[line].length;
-    }
-    count += lines.length - 1;
+    const count = lines.reduce((total, line) => total + line.length, 0) + (lines.length - 1);
 
     const start = pos;
     const end = self.session.doc.indexToPosition(index + count, 0);
@@ -124,9 +120,8 @@ class SharedbAceBinding {
     console.log('remove event fired');
     if (source === self) return;
     const deltas = [];
-    for (const op of ops) {
-      deltas.push(self.opTransform(op));
-    }
+    ops.forEach(op => deltas.push(self.opTransform(op)));
+
     self.suppress = true;
     self.session.getDocument().applyDeltas(deltas);
     self.suppress = false;
@@ -134,4 +129,4 @@ class SharedbAceBinding {
   }
 }
 
-export default sharedbAceBinding;
+export default SharedbAceBinding;
