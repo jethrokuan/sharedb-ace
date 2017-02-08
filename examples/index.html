@@ -50,7 +50,7 @@
      }
    });
 
-   require(['ace/ace', 'lib/sharedb-ace'], function(ace, sharedbAce) {
+   require(['ace/ace', 'lib/sharedb-ace'], function(ace, SharedbAce) {
      // TODO: fix worker path issue
      /* ace.config.set("workerPath", "../ace/build/src");*/
      var editor = ace.edit("editor") ; 
@@ -66,9 +66,9 @@
       *   aceDiv.appendChild(node);
       * });*/
 
-     var shareAce = new sharedbAce.default("ws://localhost:3000/", "codepad", "5898777197b4b41abeb7cfda");
-     shareAce.on('ready', function() {
-       shareAce.add(editor, ["code"]);
+     var ShareAce = new SharedbAce.default("ws://localhost:3000/", "codepad", "5898777197b4b41abeb7cfda");
+     ShareAce.on('ready', function() {
+       ShareAce.add(editor, ["code"]);
      }) 
    }); 
   </script>
