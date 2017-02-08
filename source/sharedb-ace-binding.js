@@ -10,24 +10,24 @@ class SharedbAceBinding {
     this.doc = doc;
     this.suppress = false;
     this.logger = new Logdown({ prefix: 'shareace' });
-    this.setup();
+
+    // Event Listeners
+    this.$onLocalChange = this.onLocalChange.bind(this);
+    this.$onRemoteChange = this.onRemoteChange.bind(this);
+
+    this.setInitialValue();
+    this.listen();
   }
 
-  setup() {
-    const self = this;
-    // Set initial data
-    self.suppress = true;
-    self.session.setValue(self.doc.data[self.path[0]]);
-    self.suppress = false;
+  setInitialValue() {
+    this.suppress = true;
+    this.session.setValue(this.doc.data[this.path[0]]);
+    this.suppress = false;
+  }
 
-    self.session.removeAllListeners('change');
-    self.doc.removeAllListeners('op');
-
-    self.$onLocalChange = self.onLocalChange.bind(self);
-    self.$onRemoteChange = self.onRemoteChange.bind(self);
-    self.session.on('change', self.$onLocalChange);
-
-    self.doc.on('op', self.$onRemoteChange);
+  listen() {
+    this.session.on('change', this.$onLocalChange);
+    this.doc.on('op', this.$onRemoteChange);
   }
 
   /**
@@ -97,61 +97,42 @@ class SharedbAceBinding {
   }
 
   onLocalChange(delta) {
-    this.logger.log(`*localevent*: fired ${Date.now()}`);
-    this.logger.log(`*localevent*: delta received: ${JSON.stringify(delta)}`);
-    // Rerender the whole document
-    this.repaint();
-
-    // this.editor._signal("change", delta);
-
-    // Update cursor because tab characters can influence the cursor position.
-    this.editor.$cursorChange();
-    this.editor.$updateHighlightActiveLine();
+    this.logger.log(`*local*: fired ${Date.now()}`);
+    this.logger.log(`*local*: delta received: ${JSON.stringify(delta)}`);
 
     if (this.suppress) {
-      this.logger.log('*localevent*: local delta, _skipping_');
+      this.logger.log('*local*: local delta, _skipping_');
       return;
     }
     const op = this.deltaTransform(delta);
-    this.logger.log(`*localevent*: transformed op: ${JSON.stringify(op)}`);
+    this.logger.log(`*local*: transformed op: ${JSON.stringify(op)}`);
 
     const docSubmitted = (err) => {
       if (err) throw err;
-      this.logger.log('*localevent*: op submitted');
+      this.logger.log('*local*: op submitted');
     };
 
     this.doc.submitOp(op, { source: this }, docSubmitted);
   }
 
-  // Repaint the whole document
-  // TODO: optimize, only repaint from start row onwards
-  repaint() {
-    const wrap = this.editor.session.$useWrapMode;
-    const lastRow = this.session.getDocument().getLength() - 1;
-    this.logger.log(`*repaint*: lines 0 to ${lastRow}`);
-    this.logger.log(`*repaint*: ${this.session.getValue()}`);
-    this.editor.renderer.updateLines(0, lastRow, wrap);
-  }
-
   onRemoteChange(ops, source) {
-    this.logger.log(`*remoteevent*: fired ${Date.now()}`);
+    this.logger.log(`*remote*: fired ${Date.now()}`);
     const self = this;
 
     if (source === self) {
-      this.logger.log('*remoteevent*: op origin is self; _skipping_');
+      this.logger.log('*remote*: op origin is self; _skipping_');
       return;
     }
 
     const deltas = this.opTransform(ops);
-    this.logger.log(`*remoteevent*: op received: ${JSON.stringify(ops)}`);
-    this.logger.log(`*remoteevent*: transformed delta: ${JSON.stringify(deltas)}`);
+    this.logger.log(`*remote*: op received: ${JSON.stringify(ops)}`);
+    this.logger.log(`*remote*: transformed delta: ${JSON.stringify(deltas)}`);
 
     self.suppress = true;
     self.session.getDocument().applyDeltas(deltas);
     self.suppress = false;
-    this.logger.log('*remoteevent*: delta applied');
 
-    self.repaint();
+    this.logger.log('*remote*: delta applied');
   }
 }
 
