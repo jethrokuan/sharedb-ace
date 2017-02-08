@@ -27,12 +27,11 @@ class SharedbAce extends EventEmitter {
       if (doc.type === null) {
         throw new Error('Document Uninitialized');
       }
+
       self.emit('ready');
     };
 
-    doc.subscribe(docSubscribed);
-    // Remove listeners because this will be added back later when adding bindings
-    doc.removeAllListeners('op');
+    doc.subscribe(docSubscribed.bind(doc));
 
     self.doc = doc;
     self.connections = {};

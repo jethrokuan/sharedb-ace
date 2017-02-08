@@ -21,7 +21,7 @@ class SharedbAceBinding {
     self.suppress = false;
 
     self.session.removeAllListeners('change');
-    // self.session.on('change', self.onLocalChange.call(self));
+    self.doc.removeAllListeners('op');
 
     self.$onLocalChange = self.onLocalChange.bind(self);
     self.$onRemoteChange = self.onRemoteChange.bind(self);
