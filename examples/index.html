@@ -66,7 +66,8 @@
       *   aceDiv.appendChild(node);
       * });*/
 
-     var ShareAce = new SharedbAce.default("ws://localhost:3000/", "codepad", "5898777197b4b41abeb7cfda");
+     codeId = "5891a34e1d57711cb0fcdc6d";
+     var ShareAce = new SharedbAce.default("ws://localhost:3000/", "codepad", codeId);
      ShareAce.on('ready', function() {
        ShareAce.add(editor, ["code"]);
      }) 

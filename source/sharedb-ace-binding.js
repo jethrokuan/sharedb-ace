@@ -21,9 +21,11 @@ class SharedbAceBinding {
     self.doc.removeAllListeners('op');
     // self.session.on('change', self.onLocalChange.call(self));
 
-    self.session.on('change', self.onLocalChange.bind(self));
+    self.$onLocalChange = self.onLocalChange.bind(self);
+    self.$onRemoteChange = self.onRemoteChange.bind(self);
+    self.session.on('change', self.$onLocalChange);
 
-    self.doc.on('op', self.onRemoteChange.bind(self));
+    self.doc.on('op', self.$onRemoteChange);
   }
 
   /**
@@ -31,7 +33,7 @@ class SharedbAceBinding {
    * eg. {'start':{'row':5,'column':1},'end':{'row':5,'column':2},'action':'insert','lines':['d']}
    */
   deltaTransform(delta) {
-    const aceDoc = this.sfession.getDocument();
+    const aceDoc = this.session.getDocument();
     const op = {};
     op.p = this.path.concat(aceDoc.positionToIndex(delta.start));
     let action;
@@ -85,25 +87,23 @@ class SharedbAceBinding {
   }
 
   onLocalChange(delta) {
-    const self = this;
-
     // Rerender the whole document
-    self.repaint();
+    this.repaint();
 
-    // self.editor._signal("change", delta);
+    // this.editor._signal("change", delta);
 
     // Update cursor because tab characters can influence the cursor position.
-    self.editor.$cursorChange();
-    self.editor.$updateHighlightActiveLine();
+    this.editor.$cursorChange();
+    this.editor.$updateHighlightActiveLine();
 
-    if (self.suppress) return;
-    const op = self.deltaTransform(delta);
+    if (this.suppress) return;
+    const op = this.deltaTransform(delta);
 
     const docSubmitted = (err) => {
       if (err) throw err;
     };
 
-    self.doc.submitOp(op, { source: self }, docSubmitted);
+    this.doc.submitOp(op, { source: this }, docSubmitted);
   }
 
   // Repaint the whole document
