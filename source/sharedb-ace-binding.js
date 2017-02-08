@@ -87,6 +87,7 @@ class SharedbAceBinding {
   }
 
   onLocalChange(delta) {
+    console.log('local event fired');
     // Rerender the whole document
     this.repaint();
 
@@ -116,8 +117,9 @@ class SharedbAceBinding {
   }
 
   onRemoteChange(ops, source) {
-    const self = this;
     console.log('remove event fired');
+    const self = this;
+
     if (source === self) return;
     const deltas = [];
     ops.forEach(op => deltas.push(self.opTransform(op)));
