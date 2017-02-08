@@ -10,7 +10,7 @@
     "build": "webpack",
     "build:watch": "webpack --watch",
     "prepublish": "yarn run build",
-    "test": "mocha",
+    "test": "mocha --compilers js:babel-core/register",
     "lint": "eslint source"
   },
   "precommit": {
@@ -26,11 +26,13 @@
     "babel-preset-latest": "^6.16.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
+    "chai-json-equal": "^0.0.1",
     "eslint": "^3.15.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
-    "eslint-plugin-react": "^6.9.0", 
+    "eslint-plugin-react": "^6.9.0",
+    "jsdom": "^9.10.0",
     "mocha": "^3.2.0",
     "pre-commit": "^1.2.2",
     "webpack": "^1.14.0"

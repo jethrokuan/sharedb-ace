@@ -9,8 +9,8 @@ class SharedbAceBinding {
     this.path = path;
     this.doc = doc;
     this.suppress = false;
-    this.setup();
     this.logger = new Logdown({ prefix: 'shareace' });
+    this.setup();
   }
 
   setup() {
@@ -21,7 +21,6 @@ class SharedbAceBinding {
     self.suppress = false;
 
     self.session.removeAllListeners('change');
-    self.doc.removeAllListeners('op');
     // self.session.on('change', self.onLocalChange.call(self));
 
     self.$onLocalChange = self.onLocalChange.bind(self);
@@ -38,7 +37,10 @@ class SharedbAceBinding {
   deltaTransform(delta) {
     const aceDoc = this.session.getDocument();
     const op = {};
-    op.p = this.path.concat(aceDoc.positionToIndex(delta.start));
+    const start = aceDoc.positionToIndex(delta.start);
+    const end = aceDoc.positionToIndex(delta.end);
+    op.p = this.path.concat(start);
+    this.logger.log(`start: ${start} end: ${end}`);
     let action;
     if (delta.action === 'insert') {
       action = 'si';
@@ -58,39 +60,45 @@ class SharedbAceBinding {
    * @param op - op that sharedb returns
    * eg. [{'p':[4],'sd':'e'}]
    */
-  opTransform(op) {
+  opTransform(ops) {
     const self = this;
-    const index = op.p[op.p.length - 1];
-    const pos = self.session.doc.indexToPosition(index, 0);
-    let action;
-    let lines;
+    const deltas = [];
+    ops.forEach((op) => {
+      const index = op.p[op.p.length - 1];
+      const pos = self.session.doc.indexToPosition(index, 0);
+      let action;
+      let lines;
 
-    if ('sd' in op) {
-      action = 'remove';
-      lines = op.sd.split('\n');
-    } else if ('si' in op) {
-      action = 'insert';
-      lines = op.si.split('\n');
-    } else {
-      throw new Error(`Invalid Operation: ${JSON.stringify(op)}`);
-    }
+      if ('sd' in op) {
+        action = 'remove';
+        lines = op.sd.split('\n');
+      } else if ('si' in op) {
+        action = 'insert';
+        lines = op.si.split('\n');
+      } else {
+        throw new Error(`Invalid Operation: ${JSON.stringify(op)}`);
+      }
 
-    const count = lines.reduce((total, line) => total + line.length, 0) + (lines.length - 1);
+      const count = lines.reduce((total, line) => total + line.length, lines.length - 1);
+      self.logger.log(`*count*: ${count}`);
 
-    const start = pos;
-    const end = self.session.doc.indexToPosition(index + count, 0);
+      const start = pos;
+      const end = self.session.doc.indexToPosition(index + count, 0);
 
-    const delta = {
-      start,
-      end,
-      action,
-      lines,
-    };
-    return delta;
+      const delta = {
+        start,
+        end,
+        action,
+        lines,
+      };
+      deltas.push(delta);
+    });
+    return deltas;
   }
 
   onLocalChange(delta) {
     this.logger.log(`*localevent*: fired ${Date.now()}`);
+    this.logger.log(`*localevent*: delta received: ${JSON.stringify(delta)}`);
     // Rerender the whole document
     this.repaint();
 
@@ -100,9 +108,11 @@ class SharedbAceBinding {
     this.editor.$cursorChange();
     this.editor.$updateHighlightActiveLine();
 
-    if (this.suppress) return;
+    if (this.suppress) {
+      this.logger.log('*localevent*: local delta, _skipping_');
+      return;
+    }
     const op = this.deltaTransform(delta);
-    this.logger.log(`*localevent*: delta received: ${JSON.stringify(delta)}`);
     this.logger.log(`*localevent*: transformed op: ${JSON.stringify(op)}`);
 
     const docSubmitted = (err) => {
@@ -119,6 +129,7 @@ class SharedbAceBinding {
     const wrap = this.editor.session.$useWrapMode;
     const lastRow = this.session.getDocument().getLength() - 1;
     this.logger.log(`*repaint*: lines 0 to ${lastRow}`);
+    this.logger.log(`*repaint*: ${this.session.getValue()}`);
     this.editor.renderer.updateLines(0, lastRow, wrap);
   }
 
@@ -130,8 +141,8 @@ class SharedbAceBinding {
       this.logger.log('*remoteevent*: op origin is self; _skipping_');
       return;
     }
-    const deltas = [];
-    ops.forEach(op => deltas.push(self.opTransform(op)));
+
+    const deltas = this.opTransform(ops);
     this.logger.log(`*remoteevent*: op received: ${JSON.stringify(ops)}`);
     this.logger.log(`*remoteevent*: transformed delta: ${JSON.stringify(deltas)}`);
 

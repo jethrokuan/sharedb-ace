@@ -31,6 +31,9 @@ class SharedbAce extends EventEmitter {
     };
 
     doc.subscribe(docSubscribed);
+    // Remove listeners because this will be added back later when adding bindings
+    doc.removeAllListeners('op');
+
     self.doc = doc;
     self.connections = {};
   }
