@@ -66,11 +66,26 @@
       *   aceDiv.appendChild(node);
       * });*/
 
-     codeId = "5891a34e1d57711cb0fcdc6d";
-     var ShareAce = new SharedbAce.default("ws://localhost:3000/", "codepad", codeId);
-     ShareAce.on('ready', function() {
-       ShareAce.add(editor, ["code"]);
-     }) 
+     function get(url, callback){
+       var xmlhttp;
+       // compatible with IE7+, Firefox, Chrome, Opera, Safari
+       xmlhttp = new XMLHttpRequest();
+       xmlhttp.onreadystatechange = function(){
+         if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+           callback(JSON.parse(xmlhttp.responseText));
+         }
+       }
+       xmlhttp.open("GET", url, true);
+       xmlhttp.send();
+     }
+
+     get("http://localhost:3000/gists/latest", function(data) {
+       var ShareAce = new SharedbAce.default("ws://localhost:3000/ws", "codepad", data.gistId);
+       ShareAce.on('ready', function() {
+         ShareAce.add(editor, ["code"]);
+       }); 
+     })
+     
    }); 
   </script>
 </html>

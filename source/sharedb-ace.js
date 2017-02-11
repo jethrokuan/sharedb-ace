@@ -24,6 +24,7 @@ class SharedbAce extends EventEmitter {
 
     const docSubscribed = (err) => {
       if (err) throw err;
+
       if (doc.type === null) {
         throw new Error('Document Uninitialized');
       }
