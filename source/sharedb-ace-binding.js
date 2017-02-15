@@ -132,6 +132,8 @@ class SharedbAceBinding {
     self.session.getDocument().applyDeltas(deltas);
     self.suppress = false;
 
+    this.logger.log('*remote*: session value');
+    this.logger.log(JSON.stringify(this.session.getValue()));
     this.logger.log('*remote*: delta applied');
   }
 }
