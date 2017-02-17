@@ -26,6 +26,7 @@ class SharedbAceBinding {
   }
 
   listen() {
+    this.session.removeAllListeners('change');
     this.session.on('change', this.$onLocalChange);
     this.doc.on('op', this.$onRemoteChange);
   }
@@ -99,7 +100,7 @@ class SharedbAceBinding {
   onLocalChange(delta) {
     this.logger.log(`*local*: fired ${Date.now()}`);
     this.logger.log(`*local*: delta received: ${JSON.stringify(delta)}`);
-
+    this.editor.renderer.updateFull(true);
     if (this.suppress) {
       this.logger.log('*local*: local delta, _skipping_');
       return;
@@ -134,6 +135,7 @@ class SharedbAceBinding {
 
     this.logger.log('*remote*: session value');
     this.logger.log(JSON.stringify(this.session.getValue()));
+    this.editor.renderer.updateFull(true);
     this.logger.log('*remote*: delta applied');
   }
 }
