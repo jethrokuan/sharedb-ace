@@ -5,6 +5,9 @@
      libraryTarget: "umd",
      filename: "distribution/sharedb-ace.js"
    },
+   resolve: {
+     moduleDirectories: ["node_modules"]
+   },
    module: {
      loaders: [{
        test: /\.js$/,
