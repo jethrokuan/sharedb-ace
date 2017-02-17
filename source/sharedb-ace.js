@@ -1,6 +1,6 @@
 import WebSocket from 'reconnecting-websocket';
 import EventEmitter from 'event-emitter-es6';
-import sharedb from '../node_modules/sharedb/lib/client';
+import sharedb from 'sharedb/lib/client';
 import SharedbAceBinding from './sharedb-ace-binding';
 
 class SharedbAce extends EventEmitter {
