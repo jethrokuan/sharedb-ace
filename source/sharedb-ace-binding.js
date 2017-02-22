@@ -66,8 +66,10 @@ class SharedbAceBinding {
     ops.forEach((op) => {
       const index = op.p[op.p.length - 1];
       const pos = self.session.doc.indexToPosition(index, 0);
+      const start = pos;
       let action;
       let lines;
+      let offset = 0;
 
       if ('sd' in op) {
         action = 'remove';
@@ -75,15 +77,18 @@ class SharedbAceBinding {
       } else if ('si' in op) {
         action = 'insert';
         lines = op.si.split('\n');
+        if(lines[0] === "") {
+          offset = self.session.doc.getLine(start.row) - start.column;
+        }
       } else {
         throw new Error(`Invalid Operation: ${JSON.stringify(op)}`);
       }
 
       const count = lines.reduce((total, line) => total + line.length, lines.length - 1);
       self.logger.log(`*count*: ${count}`);
+      self.logger.log(`*offset*: ${offset}`);
 
-      const start = pos;
-      const end = self.session.doc.indexToPosition(index + count, 0);
+      const end = self.session.doc.indexToPosition(index + count + offset, 0);
 
       const delta = {
         start,
