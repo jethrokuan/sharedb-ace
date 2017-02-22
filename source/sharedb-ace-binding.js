@@ -1,7 +1,7 @@
 import Logdown from 'logdown';
 
 class SharedbAceBinding {
-  constructor(aceInstance, path, doc) {
+  constructor(aceInstance, doc, path) {
     this.editor = aceInstance;
     this.editor.$blockScrolling = Infinity;
     this.session = aceInstance.getSession();

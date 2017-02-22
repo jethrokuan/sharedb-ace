@@ -45,7 +45,8 @@ class SharedbAce extends EventEmitter {
    * eg. add(aceInstance, ['foo']);
    */
   add(aceInstance, path) {
-    const binding = new SharedbAceBinding(aceInstance, path, this.doc);
+    const sharePath = path || [];
+    const binding = new SharedbAceBinding(aceInstance, this.doc, sharePath);
     this.connections[path.join(',')] = binding;
   }
 }
