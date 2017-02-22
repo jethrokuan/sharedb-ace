@@ -1,3 +1,0 @@
-* ShareDB-Ace
-This package provides two-way bindings between ShareDB and Ace editor.
-** Developing ShareDB-Ace

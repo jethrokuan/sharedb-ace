@@ -77,7 +77,7 @@ class SharedbAceBinding {
       } else if ('si' in op) {
         action = 'insert';
         lines = op.si.split('\n');
-        if(lines[0] === "") {
+        if (lines[0] === '') {
           offset = self.session.doc.getLine(start.row) - start.column;
         }
       } else {
