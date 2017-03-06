@@ -46,11 +46,11 @@
    require.config({
      paths: {
        ace: "../ace/build/src",
-       lib: "../distribution", 
+       lib: "../distribution/", 
      }
    });
 
-   require(['ace/ace', 'lib/sharedb-ace'], function(ace, SharedbAce) {
+   require(['ace/ace', 'lib/sharedb-ace.min'], function(ace, SharedbAce) {
      // TODO: fix worker path issue
      /* ace.config.set("workerPath", "../ace/build/src");*/
      var editor = ace.edit("editor") ; 

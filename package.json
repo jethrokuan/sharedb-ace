@@ -7,7 +7,8 @@
   "author": "Jethro Kuan",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
+    "build:prod": "webpack --config webpack.prod.config.js",
+    "build:dev": "webpack --config webpack.dev.config.js",
     "build:watch": "webpack --watch",
     "prepublish": "yarn run build",
     "test": "mocha --compilers js:babel-core/register",

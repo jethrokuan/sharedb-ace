@@ -1,3 +1,4 @@
+/* global ENVIRONMENT */
 import Logdown from 'logdown';
 
 class SharedbAceBinding {
@@ -10,6 +11,10 @@ class SharedbAceBinding {
     this.doc = doc;
     this.suppress = false;
     this.logger = new Logdown({ prefix: 'shareace' });
+
+    if (ENVIRONMENT === 'production') {
+      Logdown.disable('*');
+    }
 
     // Event Listeners
     this.$onLocalChange = this.onLocalChange.bind(this);
