@@ -1,4 +1,4 @@
-/* global ENVIRONMENT */
+/* global process.env */
 import Logdown from 'logdown';
 
 class SharedbAceBinding {
@@ -12,7 +12,7 @@ class SharedbAceBinding {
     this.suppress = false;
     this.logger = new Logdown({ prefix: 'shareace' });
 
-    if (ENVIRONMENT === 'production') {
+    if (process.env.NODE_ENV === 'production') {
       Logdown.disable('*');
     }
 
