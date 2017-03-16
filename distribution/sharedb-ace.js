@@ -4162,8 +4162,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'opTransform',
 	    value: function opTransform(ops) {
 	      var self = this;
-	      var deltas = [];
-	      ops.forEach(function (op) {
+	      function opToDelta(op) {
 	        var index = op.p[op.p.length - 1];
 	        var pos = self.session.doc.indexToPosition(index, 0);
 	        var start = pos;
@@ -4202,8 +4201,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	          action: action,
 	          lines: lines
 	        };
-	        deltas.push(delta);
-	      });
+
+	        return delta;
+	      }
+	      var deltas = ops.map(opToDelta);
 	      return deltas;
 	    }
 	  }, {
