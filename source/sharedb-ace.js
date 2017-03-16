@@ -51,4 +51,4 @@ class SharedbAce extends EventEmitter {
   }
 }
 
-export default SharedbAce;
+module.exports = SharedbAce;

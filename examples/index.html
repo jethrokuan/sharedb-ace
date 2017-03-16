@@ -10,82 +10,41 @@
          top: 0;
          bottom: 0;
          left: 0;
-         right: 50%;
-     }
-     .right {
-         margin: 0;
-         position: absolute;
-         top: 0;
-         bottom: 0;
-         left: 50%;
          right: 0;
-     }
-     #aceDiv, #shareDiv {
-         padding: 0 20px;
-         height: 50%;
-         width: 100%;
-         overflow: scroll;
-     }
-
-     
+     } 
     </style>
   </head> 
-  <pre id="editor"></pre> 
-  <div class="right">
-    <div id="aceDiv">
-      <h1>Ace Editor</h1>
-      <ol id="ace_debug"></ol>
-    </div>
-    <div id="shareDiv">
-      <h1>ShareDB</h1>
-      <ol id="share_debug"></ol>
-    </div>
-  </div>
-  <script src="./lib/require.js"></script>
-  <script type="text/javascript">
-   require.config({
-     paths: {
-       ace: "../ace/build/src",
-       lib: "../distribution/", 
-     }
-   });
+  <pre id="editor"></pre>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/mode-javascript.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/theme-twilight.js"></script>
+  <script src="../distribution/sharedb-ace.js"></script>
+  
+  <script type="text/javascript"> 
+   var editor = ace.edit("editor"); 
+   editor.setTheme("ace/theme/twilight");
+   var session = editor.getSession();
+   session.setMode("ace/mode/javascript");
+   session.setNewLineMode("unix");
 
-   require(['ace/ace', 'lib/sharedb-ace.min'], function(ace, SharedbAce) {
-     // TODO: fix worker path issue
-     /* ace.config.set("workerPath", "../ace/build/src");*/
-     var editor = ace.edit("editor") ; 
-     editor.setTheme("ace/theme/twilight");
-     var session = editor.getSession();
-     /* var aceDiv = document.getElementById("ace_debug");*/
-     session.setMode("ace/mode/javascript");
-     session.setNewLineMode("unix");
-     /* session.on("change", function(delta) {
-      *   var node = document.createElement("LI");
-      *   var textnode = document.createTextNode(JSON.stringify(delta));
-      *   node.appendChild(textnode);
-      *   aceDiv.appendChild(node);
-      * });*/
-
-     function get(url, callback){
-       var xmlhttp;
-       // compatible with IE7+, Firefox, Chrome, Opera, Safari
-       xmlhttp = new XMLHttpRequest();
-       xmlhttp.onreadystatechange = function(){
-         if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
-           callback(JSON.parse(xmlhttp.responseText));
-         }
+   function get(url, callback){
+     var xmlhttp;
+     // compatible with IE7+, Firefox, Chrome, Opera, Safari
+     xmlhttp = new XMLHttpRequest();
+     xmlhttp.onreadystatechange = function(){
+       if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+         callback(JSON.parse(xmlhttp.responseText));
        }
-       xmlhttp.open("GET", url, true);
-       xmlhttp.send();
      }
+     xmlhttp.open("GET", url, true);
+     xmlhttp.send();
+   }
 
-     get("http://localhost:3000/gists/latest", function(data) {
-       var ShareAce = new SharedbAce.default("ws://localhost:3000/ws", "codepad", data.gistId);
-       ShareAce.on('ready', function() {
-         ShareAce.add(editor, ["code"]);
-       }); 
-     })
-     
-   }); 
+   get("http://localhost:3000/gists/latest", function(data) {
+     var ShareAce = new sharedbAce("ws://localhost:3000/ws", "codepad", data.gistId);
+     ShareAce.on('ready', function() {
+       ShareAce.add(editor, ["code"]);
+     }); 
+   }) 
   </script>
 </html>
