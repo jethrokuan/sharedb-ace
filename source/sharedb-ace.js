@@ -14,10 +14,16 @@ class SharedbAce extends EventEmitter {
    * and initiates the document
    * and initializes the sharedb with no connections
    */
-  constructor(wsUrl, namespace, id) {
+  constructor(wsUrl, namespace, id, pluginWSUrl) {
     super();
     const socket = new WebSocket(wsUrl);
-    this.extensionSocket = null;
+    this.pluginWS = null;
+    if (pluginWSUrl !== null) {
+      this.pluginWS = new WebSocket(pluginWSUrl);
+      this.pluginWS.addEventListener('open', () => {
+        this.pluginWS.send('server:init');
+      });
+    }
     const connection = new sharedb.Connection(socket);
     const doc = connection.get(namespace, id);
     // Fetches once from the server, and fires events on subsequent document changes
@@ -44,27 +50,10 @@ class SharedbAce extends EventEmitter {
    * adds a two-way binding between an aceInstance and the path
    * eg. add(aceInstance, ['foo']);
    */
-  add(aceInstance, path) {
+  add(aceInstance, path, plugins) {
     const sharePath = path || [];
-    const binding = new SharedbAceBinding(aceInstance, this.doc, sharePath);
+    const binding = new SharedbAceBinding(aceInstance, this.doc, sharePath, this.pluginWS, plugins);
     this.connections[JSON.stringify(path)] = binding;
-  }
-
-  /**
-   * @param socketUrl - URL for second webserver
-   * @param plugins - array of plugins
-   */
-  use(socketUrl, plugins) {
-    this.extensionSocket = new WebSocket(socketUrl);
-    this.extensionSocket.addEventListener('open', () => {
-      this.extensionSocket.send('server:init');
-    });
-
-    this.plugins = plugins;
-
-    this.plugins.forEach((plugin) => {
-      plugin.call(this);
-    });
   }
 }
 

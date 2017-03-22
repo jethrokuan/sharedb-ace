@@ -58,11 +58,10 @@
    }
 
    get("http://localhost:3000/gists/latest", function(data) {
-     var ShareAce = new sharedbAce("ws://localhost:3000/ws", "codepad", data.id);
+     var ShareAce = new sharedbAce("ws://localhost:3000/ws", "codepad", data.id, "ws://localhost:3108/ws");
      ShareAce.on('ready', function() {
-       ShareAce.add(editor, ["code"]);
-       ShareAce.add(editor2, ["testcases"]);
-       ShareAce.use("ws://localhost:3108/ws", [SharedbAceRWControl]);
+       ShareAce.add(editor, ["code"], [SharedbAceRWControl]);
+       ShareAce.add(editor2, ["testcases"]); 
      });
    })
    /* 

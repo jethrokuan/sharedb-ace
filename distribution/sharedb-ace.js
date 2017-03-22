@@ -94,13 +94,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * and initiates the document
 	   * and initializes the sharedb with no connections
 	   */
-	  function SharedbAce(wsUrl, namespace, id) {
+	  function SharedbAce(wsUrl, namespace, id, pluginWSUrl) {
 	    _classCallCheck(this, SharedbAce);
 
 	    var _this = _possibleConstructorReturn(this, (SharedbAce.__proto__ || Object.getPrototypeOf(SharedbAce)).call(this));
 
 	    var socket = new _reconnectingWebsocket2.default(wsUrl);
-	    _this.extensionSocket = null;
+	    _this.pluginWS = null;
+	    if (pluginWSUrl !== null) {
+	      _this.pluginWS = new _reconnectingWebsocket2.default(pluginWSUrl);
+	      _this.pluginWS.addEventListener('open', function () {
+	        _this.pluginWS.send('server:init');
+	      });
+	    }
 	    var connection = new _client2.default.Connection(socket);
 	    var doc = connection.get(namespace, id);
 	    // Fetches once from the server, and fires events on subsequent document changes
@@ -132,32 +138,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  _createClass(SharedbAce, [{
 	    key: 'add',
-	    value: function add(aceInstance, path) {
+	    value: function add(aceInstance, path, plugins) {
 	      var sharePath = path || [];
-	      var binding = new _sharedbAceBinding2.default(aceInstance, this.doc, sharePath);
+	      var binding = new _sharedbAceBinding2.default(aceInstance, this.doc, sharePath, this.pluginWS, plugins);
 	      this.connections[JSON.stringify(path)] = binding;
-	    }
-
-	    /**
-	     * @param socketUrl - URL for second webserver
-	     * @param plugins - array of plugins
-	     */
-
-	  }, {
-	    key: 'use',
-	    value: function use(socketUrl, plugins) {
-	      var _this2 = this;
-
-	      this.extensionSocket = new _reconnectingWebsocket2.default(socketUrl);
-	      this.extensionSocket.addEventListener('open', function () {
-	        _this2.extensionSocket.send('server:init');
-	      });
-
-	      this.plugins = plugins;
-
-	      this.plugins.forEach(function (plugin) {
-	        plugin.call(_this2);
-	      });
 	    }
 	  }]);
 
@@ -4108,7 +4092,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var SharedbAceBinding = function () {
-	  function SharedbAceBinding(aceInstance, doc, path) {
+	  function SharedbAceBinding(aceInstance, doc, path, pluginWS, plugins) {
+	    var _this = this;
+
 	    _classCallCheck(this, SharedbAceBinding);
 
 	    this.editor = aceInstance;
@@ -4118,7 +4104,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.path = path;
 	    this.doc = doc;
 	    this.suppress = false;
+	    this.pluginWS = pluginWS;
+	    this.plugins = plugins || [];
 	    this.logger = new _logdown2.default({ prefix: 'shareace' });
+
+	    this.plugins.forEach(function (plugin) {
+	      plugin(_this.pluginWS, _this.editor);
+	    });
 
 	    if (process.env.NODE_ENV === 'production') {
 	      _logdown2.default.disable('*');
@@ -4232,7 +4224,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'onLocalChange',
 	    value: function onLocalChange(delta) {
-	      var _this = this;
+	      var _this2 = this;
 
 	      this.logger.log('*local*: fired ' + Date.now());
 	      this.logger.log('*local*: delta received: ' + JSON.stringify(delta));
@@ -4246,7 +4238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var docSubmitted = function docSubmitted(err) {
 	        if (err) throw err;
-	        _this.logger.log('*local*: op submitted');
+	        _this2.logger.log('*local*: op submitted');
 	      };
 
 	      this.doc.submitOp(op, { source: this }, docSubmitted);

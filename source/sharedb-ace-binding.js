@@ -2,7 +2,7 @@
 import Logdown from 'logdown';
 
 class SharedbAceBinding {
-  constructor(aceInstance, doc, path) {
+  constructor(aceInstance, doc, path, pluginWS, plugins) {
     this.editor = aceInstance;
     this.editor.$blockScrolling = Infinity;
     this.session = aceInstance.getSession();
@@ -10,8 +10,13 @@ class SharedbAceBinding {
     this.path = path;
     this.doc = doc;
     this.suppress = false;
+    this.pluginWS = pluginWS;
+    this.plugins = plugins || [];
     this.logger = new Logdown({ prefix: 'shareace' });
 
+    this.plugins.forEach((plugin) => {
+      plugin(this.pluginWS, this.editor);
+    });
 
     if (process.env.NODE_ENV === 'production') {
       Logdown.disable('*');
