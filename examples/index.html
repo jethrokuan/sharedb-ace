@@ -10,22 +10,39 @@
          top: 0;
          bottom: 0;
          left: 0;
+         right: 50%;
+     }
+     #editor2 {
+         margin: 0;
+         position: absolute;
+         top: 0;
+         bottom: 0;
+         left: 50%;
          right: 0;
-     } 
+     }
     </style>
   </head> 
   <pre id="editor"></pre>
+  <pre id="editor2"></pre>
+  <button id="readonly" style="position: absolute; right: 3px; top: 3px;">Make read-only</button>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/mode-javascript.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/theme-twilight.js"></script>
   <script src="../distribution/sharedb-ace.js"></script>
-  
+  <script src="./lib/sharedb-ace-rw-control.js"></script>
+
   <script type="text/javascript"> 
    var editor = ace.edit("editor"); 
    editor.setTheme("ace/theme/twilight");
    var session = editor.getSession();
    session.setMode("ace/mode/javascript");
    session.setNewLineMode("unix");
+
+   var editor2 = ace.edit("editor2"); 
+   editor2.setTheme("ace/theme/twilight");
+   var session2 = editor2.getSession();
+   session2.setMode("ace/mode/javascript");
+   session2.setNewLineMode("unix"); 
 
    function get(url, callback){
      var xmlhttp;
@@ -44,7 +61,27 @@
      var ShareAce = new sharedbAce("ws://localhost:3000/ws", "codepad", data.id);
      ShareAce.on('ready', function() {
        ShareAce.add(editor, ["code"]);
-     }); 
-   }) 
+       ShareAce.add(editor2, ["testcases"]);
+       ShareAce.use("ws://localhost:3108/ws", [SharedbAceRWControl]);
+     });
+   })
+   /* 
+    *    var socket = new WebSocket("ws://localhost:3108/ws");
+    *    socket.addEventListener("open", function(event){
+    *      var buttonEl = document.getElementById("readonly");
+    *      buttonEl.addEventListener("click", function() {
+    *        socket.send("setReadOnly:true");
+    *      })
+    *      socket.send("server:init");
+    *    })
+    *    socket.addEventListener("message", function(message) {
+    *      switch(message.data) {
+    *        case "setReadOnly:true":
+    *          editor.setOptions({readOnly: true});
+    *          break;
+    *        default:
+    *          console.warn("Unhandled case: " + message.data);
+    *      }
+    *    });*/
   </script>
 </html>

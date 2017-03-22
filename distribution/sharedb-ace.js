@@ -99,8 +99,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var _this = _possibleConstructorReturn(this, (SharedbAce.__proto__ || Object.getPrototypeOf(SharedbAce)).call(this));
 
-	    var self = _this;
 	    var socket = new _reconnectingWebsocket2.default(wsUrl);
+	    _this.extensionSocket = null;
 	    var connection = new _client2.default.Connection(socket);
 	    var doc = connection.get(namespace, id);
 	    // Fetches once from the server, and fires events on subsequent document changes
@@ -112,13 +112,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        throw new Error('Document Uninitialized');
 	      }
 
-	      self.emit('ready');
+	      _this.emit('ready');
 	    };
 
 	    doc.subscribe(docSubscribed.bind(doc));
 
-	    self.doc = doc;
-	    self.connections = {};
+	    _this.doc = doc;
+	    _this.connections = {};
 	    return _this;
 	  }
 
@@ -135,7 +135,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function add(aceInstance, path) {
 	      var sharePath = path || [];
 	      var binding = new _sharedbAceBinding2.default(aceInstance, this.doc, sharePath);
-	      this.connections[path.join(',')] = binding;
+	      this.connections[JSON.stringify(path)] = binding;
+	    }
+
+	    /**
+	     * @param socketUrl - URL for second webserver
+	     * @param plugins - array of plugins
+	     */
+
+	  }, {
+	    key: 'use',
+	    value: function use(socketUrl, plugins) {
+	      var _this2 = this;
+
+	      this.extensionSocket = new _reconnectingWebsocket2.default(socketUrl);
+	      this.extensionSocket.addEventListener('open', function () {
+	        _this2.extensionSocket.send('server:init');
+	      });
+
+	      this.plugins = plugins;
+
+	      this.plugins.forEach(function (plugin) {
+	        plugin.call(_this2);
+	      });
 	    }
 	  }]);
 
@@ -4235,8 +4257,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.logger.log('*remote*: fired ' + Date.now());
 	      var self = this;
 
+	      var opsPath = ops[0].p.slice(0, ops[0].p.length - 1).toString();
+	      this.logger.log(opsPath);
 	      if (source === self) {
 	        this.logger.log('*remote*: op origin is self; _skipping_');
+	        return;
+	      } else if (opsPath !== this.path.toString()) {
+	        this.logger.log('*remote*: not from my path; _skipping_');
 	        return;
 	      }
 

@@ -12,6 +12,7 @@ class SharedbAceBinding {
     this.suppress = false;
     this.logger = new Logdown({ prefix: 'shareace' });
 
+
     if (process.env.NODE_ENV === 'production') {
       Logdown.disable('*');
     }
@@ -134,8 +135,13 @@ class SharedbAceBinding {
     this.logger.log(`*remote*: fired ${Date.now()}`);
     const self = this;
 
+    const opsPath = ops[0].p.slice(0, ops[0].p.length - 1).toString();
+    this.logger.log(opsPath);
     if (source === self) {
       this.logger.log('*remote*: op origin is self; _skipping_');
+      return;
+    } else if (opsPath !== this.path.toString()) {
+      this.logger.log('*remote*: not from my path; _skipping_');
       return;
     }
 

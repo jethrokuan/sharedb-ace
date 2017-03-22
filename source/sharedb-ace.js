@@ -16,8 +16,8 @@ class SharedbAce extends EventEmitter {
    */
   constructor(wsUrl, namespace, id) {
     super();
-    const self = this;
     const socket = new WebSocket(wsUrl);
+    this.extensionSocket = null;
     const connection = new sharedb.Connection(socket);
     const doc = connection.get(namespace, id);
     // Fetches once from the server, and fires events on subsequent document changes
@@ -29,13 +29,13 @@ class SharedbAce extends EventEmitter {
         throw new Error('Document Uninitialized');
       }
 
-      self.emit('ready');
+      this.emit('ready');
     };
 
     doc.subscribe(docSubscribed.bind(doc));
 
-    self.doc = doc;
-    self.connections = {};
+    this.doc = doc;
+    this.connections = {};
   }
 
   /**
@@ -47,7 +47,24 @@ class SharedbAce extends EventEmitter {
   add(aceInstance, path) {
     const sharePath = path || [];
     const binding = new SharedbAceBinding(aceInstance, this.doc, sharePath);
-    this.connections[path.join(',')] = binding;
+    this.connections[JSON.stringify(path)] = binding;
+  }
+
+  /**
+   * @param socketUrl - URL for second webserver
+   * @param plugins - array of plugins
+   */
+  use(socketUrl, plugins) {
+    this.extensionSocket = new WebSocket(socketUrl);
+    this.extensionSocket.addEventListener('open', () => {
+      this.extensionSocket.send('server:init');
+    });
+
+    this.plugins = plugins;
+
+    this.plugins.forEach((plugin) => {
+      plugin.call(this);
+    });
   }
 }
 
