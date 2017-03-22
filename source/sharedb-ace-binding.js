@@ -66,7 +66,7 @@ class SharedbAceBinding {
    * eg. [{'p':[4],'sd':'e'}]
    */
   opTransform(ops) {
-    const self = this; 
+    const self = this;
     function opToDelta(op) {
       const index = op.p[op.p.length - 1];
       const pos = self.session.doc.indexToPosition(index, 0);
@@ -107,7 +107,7 @@ class SharedbAceBinding {
 
       return delta;
     }
-    const deltas = ops.map(opToDelta); 
+    const deltas = ops.map(opToDelta);
     return deltas;
   }
 

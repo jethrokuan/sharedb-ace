@@ -41,7 +41,7 @@
    }
 
    get("http://localhost:3000/gists/latest", function(data) {
-     var ShareAce = new sharedbAce("ws://localhost:3000/ws", "codepad", data.gistId);
+     var ShareAce = new sharedbAce("ws://localhost:3000/ws", "codepad", data.id);
      ShareAce.on('ready', function() {
        ShareAce.add(editor, ["code"]);
      }); 
