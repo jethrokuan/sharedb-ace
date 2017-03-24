@@ -4,7 +4,7 @@ import Logdown from 'logdown';
 class SharedbAceBinding {
   constructor(options) {
     this.editor = options.ace;
-    this.editor.id = `{options.id}-${options.path}`;
+    this.editor.id = `${options.id}-${options.path}`;
     this.editor.$blockScrolling = Infinity;
     this.session = this.editor.getSession();
     this.newline = this.session.getDocument().getNewLineCharacter();
