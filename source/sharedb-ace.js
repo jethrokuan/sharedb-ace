@@ -3,28 +3,41 @@ import EventEmitter from 'event-emitter-es6';
 import sharedb from 'sharedb/lib/client';
 import SharedbAceBinding from './sharedb-ace-binding';
 
-class SharedbAce extends EventEmitter {
+function IllegalArgumentException(message) {
+  this.message = message;
+  this.name = 'IllegalArgumentException';
+}
 
+class SharedbAce extends EventEmitter {
   /**
-   * @param wsUrl - URL to connect to shareDB
-   * @param namespace - database table
    * @param id - document id
+   * @param options:
+   *   namespace
+   *   WsUrl
+   *   pluginWsUrl
    *
    * creating a sharedbAce instance connects to sharedb via the websocket URL
    * and initiates the document
    * and initializes the sharedb with no connections
    */
-  constructor(wsUrl, namespace, id, pluginWSUrl) {
+  constructor(id, options) {
     super();
-    const socket = new WebSocket(wsUrl);
-    this.pluginWS = null;
-    if (pluginWSUrl !== null) {
-      this.pluginWS = new WebSocket(pluginWSUrl);
-      this.pluginWS.addEventListener('open', () => {
-        this.pluginWS.send('server:init');
-      });
+    this.id = id;
+    if (options.pluginWsUrl !== null) {
+      this.pluginWS = new WebSocket(options.pluginWsUrl);
     }
-    const connection = new sharedb.Connection(socket);
+
+    if (options.WsUrl === null) {
+      throw new IllegalArgumentException('wsUrl not provided.');
+    }
+
+    this.WS = new WebSocket(options.WsUrl);
+
+    const connection = new sharedb.Connection(this.WS);
+    if (options.namespace === null) {
+      throw new IllegalArgumentException('namespace not provided.');
+    }
+    const namespace = options.namespace;
     const doc = connection.get(namespace, id);
     // Fetches once from the server, and fires events on subsequent document changes
 
@@ -52,9 +65,16 @@ class SharedbAce extends EventEmitter {
    */
   add(aceInstance, path, plugins) {
     const sharePath = path || [];
-    const binding = new SharedbAceBinding(aceInstance, this.doc, sharePath, this.pluginWS, plugins);
+    const binding = new SharedbAceBinding({
+      ace: aceInstance,
+      doc: this.doc,
+      path: sharePath,
+      pluginWS: this.pluginWS,
+      id: this.id,
+      plugins,
+    });
     this.connections[JSON.stringify(path)] = binding;
   }
 }
 
-module.exports = SharedbAce;
+export default SharedbAce;

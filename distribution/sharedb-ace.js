@@ -103,9 +103,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _this.pluginWS = null;
 	    if (pluginWSUrl !== null) {
 	      _this.pluginWS = new _reconnectingWebsocket2.default(pluginWSUrl);
-	      _this.pluginWS.addEventListener('open', function () {
-	        _this.pluginWS.send('server:init');
-	      });
 	    }
 	    var connection = new _client2.default.Connection(socket);
 	    var doc = connection.get(namespace, id);
