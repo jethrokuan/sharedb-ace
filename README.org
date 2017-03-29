@@ -1,4 +1,6 @@
 * Sharedb-ace
+[[https://badge.fury.io/js/sharedb-ace.svg]]
+
 Sharedb-ace provides two-way bindings between [sharedb](https://github.com/share/sharedb) and [ace-editor](http://ace.c9.io/).
 
 ** Installation
