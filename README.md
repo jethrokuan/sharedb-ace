@@ -2,7 +2,6 @@
 Sharedb-ace provides two-way bindings between [sharedb](https://github.com/share/sharedb) and [ace-editor](http://ace.c9.io/).
 
 ## Installation
-
 https://www.npmjs.com/package/sharedb-ace
 
 Option 1: Using npm:
