@@ -8,9 +8,7 @@
   "files": [ "dist" ],
   "license": "MIT",
   "scripts": {
-    "build:prod": "webpack --config webpack.prod.config.js",
-    "build:dev": "webpack --config webpack.dev.config.js",
-    "build:watch": "webpack --config webpack.dev.config.js --prepublish --watch",
+    "build": "webpack", 
     "watch": "yarn run build",
     "test": "mocha --compilers js:babel-core/register",
     "lint": "eslint source"

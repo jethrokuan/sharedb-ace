@@ -5,11 +5,18 @@ module.exports = {
   output: {
     library: "sharedbAce",
     libraryTarget: "umd",
-    filename: "distribution/sharedb-ace.js"
+    filename: "dist/sharedb-ace.min.js"
   },
   plugins: [
     new webpack.DefinePlugin({
-      ENVIRONMENT: JSON.stringify("development"),
+      'process.env': {
+        NODE_ENV: JSON.stringify('production'),
+      } 
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
     })
   ],
   module: {
@@ -19,4 +26,4 @@ module.exports = {
       loader: 'babel-loader'
     }]
   }
-}
+ }
