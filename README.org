@@ -1,20 +1,20 @@
 * Sharedb-ace
 [[https://badge.fury.io/js/sharedb-ace.svg]]
 
-Sharedb-ace provides two-way bindings between [sharedb](https://github.com/share/sharedb) and [ace-editor](http://ace.c9.io/).
+Sharedb-ace provides two-way bindings between [[https://github.com/share/sharedb][ShareDB]] and [[http://ace.c9.io/][Ace Editor]].
 
 ** Installation
-https://www.npmjs.com/package/sharedb-ace
-
-Option 1: Using npm:
+Using npm:
 
 #+BEGIN_SRC sh
 npm install sharedb-ace
 #+END_SRC
 
-Option 2: Using pre-compiled js:
+Using pre-compiled js from unpkg CDN:
 
-TODO: create distributable precompiled js file, put on CDN.
+#+BEGIN_SRC html
+  <script src="https://unpkg.com/sharedb-ace@latest/dist/sharedb-ace.min.js"></script>
+#+END_SRC
 
 ** Documentation
 Please see [[http://www.jethrokuan.com/sharedb-ace/][here]] for internals documentation.
