@@ -5,6 +5,7 @@
   "main": "./source/sharedb-ace.js",
   "repository": "https://github.com/jethrokuan/sharedb-ace",
   "author": "Jethro Kuan",
+  "files": [ "dist" ],
   "license": "MIT",
   "scripts": {
     "build:prod": "webpack --config webpack.prod.config.js",

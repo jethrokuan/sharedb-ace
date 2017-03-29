@@ -1,0 +1,61 @@
+* Sharedb-ace
+Sharedb-ace provides two-way bindings between [sharedb](https://github.com/share/sharedb) and [ace-editor](http://ace.c9.io/).
+
+** Installation
+https://www.npmjs.com/package/sharedb-ace
+
+Option 1: Using npm:
+
+#+BEGIN_SRC sh
+npm install sharedb-ace
+#+END_SRC
+
+Option 2: Using pre-compiled js:
+
+TODO: create distributable precompiled js file, put on CDN.
+
+** Documentation
+Please see [[http://www.jethrokuan.com/sharedb-ace/][here]] for internals documentation.
+
+*** Single Ace-editor Instance
+Setup the ShareDB document as a string:
+#+BEGIN_SRC js
+  ShareAce.on('ready', function() {
+    ShareAce.add(editor, [], [ Plugins, Here ]);
+  });
+#+END_SRC
+
+*** Multiple Ace-editor Instances
+Your setup may be more complex, and requires the use of multiple ace-instances synchronized over one connection. Setup the ShareDB document to be a JSON object.
+
+For example:
+#+BEGIN_SRC js
+{
+  "foo": "",
+  "bar": ""
+}
+
+Next, connect the two paths to two separate ace editor instances:
+#+BEGIN_SRC js
+ShareAce.on('ready', function() {
+  ShareAce.add(editor1, ["foo"], []);
+  ShareAce.add(editor2, ["bar"], []);
+});
+#+END_SRC
+
+** Developing sharedb-ace
+1. Fork or clone this repo:
+#+BEGIN_SRC sh
+git clone https://github.com/jethrokuan/sharedb-ace.git
+#+END_SRC
+
+#+BEGIN_SRC sh
+cd sharedb-ace && yarn install
+#+END_SRC
+
+*** Generating JS Docs
+We generate javascript documentation using inline documentation.
+
+#+BEGIN_SRC sh
+jsdoc source/*.js --destination ./docs/
+#+END_SRC
