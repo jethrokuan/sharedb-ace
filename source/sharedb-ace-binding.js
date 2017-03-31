@@ -12,10 +12,9 @@ class SharedbAceBinding {
   /**
    * Constructs the binding object.
    *
-   * Initializes the  ace document initial value to that of the ShareDB document
-   *
-   * Sets up the local and remote event listeners, and begins listening to local
-   * and remote change events
+   * Initializes the Ace document initial value to that of the
+   * ShareDB document. Also , sets up the local and remote event
+   * listeners, and begins listening to local and remote change events
    *
    * @param {Object} options - contains all parameters
    * @param {Object} options.ace - ace editor instance
@@ -25,6 +24,14 @@ class SharedbAceBinding {
    * @param {string[]} options.path - A lens, describing the nesting
    * to the JSON document. It should point to a string.
    * @param {Object[]} options.plugins - array of sharedb-ace plugins
+   * @example
+   * const binding = new SharedbAceBinding({
+   *   ace: aceInstance,
+   *   doc: sharedbDoc,
+   *   path: ["path"],
+   *   plugins: [ SharedbAceMultipleCursors ],
+   *   pluginWS: "http://localhost:3108/ws",
+   * })
    */
   constructor(options) {
     this.editor = options.ace;
