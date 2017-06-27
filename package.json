@@ -6,11 +6,12 @@
   "repository": "https://github.com/jethrokuan/sharedb-ace",
   "author": "Jethro Kuan",
   "files": [
-    "dist"
+    "dist", "distribution"
   ],
   "license": "MIT",
   "scripts": {
-    "build": "babel source --presets babel-preset-latest --out-dir distribution",
+    "build": "npm run build:npm && npm run build:dist",
+    "build:npm": "babel source --presets babel-preset-latest --out-dir distribution",
     "build:dist": "webpack",
     "watch": "yarn run build",
     "test": "echo 'doing nothing'",
