@@ -2,7 +2,7 @@
   "name": "sharedb-ace",
   "version": "1.0.1",
   "description": "ShareDB keybindings for Ace Editor",
-  "main": "./dist/sharedb-ace.min.js",
+  "main": "./distribution/sharedb-ace.js",
   "repository": "https://github.com/jethrokuan/sharedb-ace",
   "author": "Jethro Kuan",
   "files": [
@@ -10,11 +10,13 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
+    "build": "babel source --presets babel-preset-latest --out-dir distribution",
+    "build:dist": "webpack",
     "watch": "yarn run build",
     "test": "echo 'doing nothing'",
     "lint": "eslint source",
     "docs": "jsdoc source/*.js -d ./docs/",
+    "prepublish": "npm run build",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "precommit": {
