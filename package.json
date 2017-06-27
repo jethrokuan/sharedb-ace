@@ -2,7 +2,7 @@
   "name": "sharedb-ace",
   "version": "1.0.1",
   "description": "ShareDB keybindings for Ace Editor",
-  "main": "./source/sharedb-ace.js",
+  "main": "./dist/sharedb-ace.min.js",
   "repository": "https://github.com/jethrokuan/sharedb-ace",
   "author": "Jethro Kuan",
   "files": [
