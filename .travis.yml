@@ -9,6 +9,7 @@ node_js:
 before_script:
   - npm prune
 after_success:
+  - npm build
   - npm run semantic-release
 branches:
   except:
