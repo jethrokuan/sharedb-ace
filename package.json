@@ -6,7 +6,8 @@
   "repository": "https://github.com/jethrokuan/sharedb-ace",
   "author": "Jethro Kuan",
   "files": [
-    "dist", "distribution"
+    "dist",
+    "distribution"
   ],
   "license": "MIT",
   "scripts": {
@@ -48,7 +49,7 @@
   "dependencies": {
     "event-emitter-es6": "^1.1.5",
     "logdown": "^2.0.3",
-    "reconnecting-websocket": "^3.0.3",
+    "reconnecting-websocket": "^4.1.10",
     "semantic-release": "^6.3.6",
     "sharedb": "^1.0.0-beta.7"
   }
