@@ -14,11 +14,9 @@
     "build": "npm run build:npm && npm run build:dist",
     "build:npm": "babel source --presets babel-preset-latest --out-dir distribution",
     "build:dist": "webpack",
-    "watch": "npm run build",
     "test": "echo 'doing nothing'",
     "lint": "eslint source",
-    "docs": "jsdoc source/*.js -d ./docs/",
-    "prepublish": "npm run build",
+    "docs": "jsdoc source/*.js -d ./docs/"
   },
   "precommit": {
     "run": [

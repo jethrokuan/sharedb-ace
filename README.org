@@ -52,7 +52,7 @@ git clone https://github.com/jethrokuan/sharedb-ace.git
 #+END_SRC
 
 #+BEGIN_SRC sh
-cd sharedb-ace && yarn install
+cd sharedb-ace && npm install
 #+END_SRC
 
 *** Generating JS Docs
