@@ -15,13 +15,8 @@
     "build:npm": "babel source --presets babel-preset-latest --out-dir distribution",
     "build:dist": "webpack",
     "test": "echo 'doing nothing'",
-    "lint": "eslint source",
-    "docs": "jsdoc source/*.js -d ./docs/"
-  },
-  "precommit": {
-    "run": [
-      "lint"
-    ]
+    "docs": "jsdoc source/*.js -d ./docs/",
+    "prepublish": "npm run build"
   },
   "devDependencies": {
     "amd-loader": "^0.0.5",
