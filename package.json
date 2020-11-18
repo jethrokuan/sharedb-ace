@@ -41,7 +41,7 @@
     "event-emitter-es6": "^1.1.5",
     "logdown": "^2.0.3",
     "reconnecting-websocket": "^4.1.10",
-    "semantic-release": "^15.13.3",
+    "semantic-release": "^17.2.3",
     "sharedb": "^1.0.0-beta.7"
   }
 }
